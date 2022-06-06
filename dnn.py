@@ -2,8 +2,9 @@ import os
 import numpy as np
 import pandas as pd
 import tensorflow as tf
-from sklearn.model_selection import train_test_split
 import matplotlib.pyplot as plt
+
+import time
 
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 np.random.seed(100)
@@ -43,43 +44,24 @@ model_path = 'tf_dnn_model'
 version = '1'
 save_path = f'{model_path}/{version}'
 
-history = model.fit(train_ds, epochs=500, verbose=1)
+history = model.fit(train_ds, epochs=1000, verbose=1)
 print('\n')
 loss,acc = model.evaluate(test_X, test_Y)
 print("Loss : ", loss, "Acc : ", acc)
 
-# pred_y = model.predict(test_X)
-# plt.figure(figsize=(10,7))
-# plt.plot(history.history['loss'], label = 'Train loss')
-#
-# plt.legend()
-# plt.show()
+start = time.time()
+pred_y = model.predict(test_X)
+end = time.time()
+
+print(f"{end - start:.5f} sec")
+
+plt.scatter(test_Y, pred_y, alpha=0.4)
+plt.xlabel("Actual Total Time")
+plt.ylabel("Predicted Total Time")
+plt.title("DNN")
+plt.show()
 
 # 주석해제
 tf.keras.models.save_model(model, save_path)
 
 tf_model = tf.keras.models.load_model('./tf_dnn_model/1')
-
-# model = tf.keras.models.Sequential([
-#     tf.keras.layers.Dense(64, activation='relu', input_shape=(5,)),
-#     tf.keras.layers.Dense(64,activation='relu'),
-#     tf.keras.layers.Dense(64,activation='relu'),
-#     tf.keras.layers.Dense(1)
-#     ])
-#
-# model.compile(loss='mean_squared_error', optimizer='adam')
-# history = model.fit(train_ds, epochs=1000, verbose=2)
-# print('\n')
-#
-# loss = model.evaluate(test_X, test_Y, verbose=0)
-x1_lst = [4]
-x2_lst = [17]
-x3_lst = [10]
-
-data_a = pd.DataFrame((zip(x1_lst,x2_lst,x3_lst)),columns=['x1','x2','x3'])
-predictions = tf_model.predict(data_a)
-#
-# print("Loss : ", loss)
-# for i in range(5):
-#     print("%d 번째 테스트 데이터의 실제값: %f" % (i, test_Y.iloc[i]))
-#     print("%d 번째 테스트 데이터의 예측값: %f" % (i, predictions[i][0]))
